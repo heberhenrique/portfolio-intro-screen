@@ -22,7 +22,7 @@
         }
         .terminal {
             width: 80vw;
-            height: 90vh;
+            height: calc(90vh - env(safe-area-inset-bottom)); /* Adjust for iOS footer bar */
             white-space: pre;
             border: 5px solid #333;
             padding: 15px;
@@ -64,7 +64,7 @@
             }
             .terminal {
                 width: 90vw;
-                height: 85vh;
+                height: calc(85vh - env(safe-area-inset-bottom));
                 padding: 10px;
                 border-width: 4px;
             }
@@ -75,7 +75,7 @@
             }
             .terminal {
                 width: 95vw;
-                height: 85vh;
+                height: calc(85vh - env(safe-area-inset-bottom));
                 padding: 10px;
                 border-width: 3px;
             }
@@ -86,7 +86,7 @@
         }
         @media (max-width: 375px) {
             .terminal {
-                height: 90vh;
+                height: calc(90vh - env(safe-area-inset-bottom));
             }
         }
     </style>
