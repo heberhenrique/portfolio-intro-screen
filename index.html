@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>System Boot</title>
     <style>
         body {
@@ -19,17 +20,21 @@
             justify-content: center;
             height: 100vh;
             width: 100vw;
+            position: relative;
         }
+
         .terminal {
             width: 80vw;
-            height: 95vh; /* Increased to push bottom border up */
+            height: 85vh;
             white-space: pre;
             border: 5px solid #333;
             padding: 15px;
             box-sizing: border-box;
             position: relative;
             overflow: hidden;
+            z-index: 1;
         }
+
         .cursor {
             display: inline-block;
             width: 8px;
@@ -37,61 +42,158 @@
             background: green;
             animation: blink 0.5s infinite;
         }
+
         @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0; }
-            100% { opacity: 1; }
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
         }
-        /* Responsive Fix: Ensure Border Stays Visible */
+
+        /* ✅ CRT Scanlines + Flicker Effect */
+        .crt {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            background: repeating-linear-gradient(to bottom,
+                    rgba(0, 255, 0, 0.03) 0px,
+                    rgba(0, 255, 0, 0.08) 1px,
+                    rgba(0, 255, 0, 0.03) 2px);
+            animation: flicker 0.15s infinite alternate;
+        }
+
+        @keyframes flicker {
+            from {
+                opacity: 0.15;
+            }
+
+            to {
+                opacity: 0.25;
+            }
+        }
+
+        /* ✅ RESPONSIVE FONT-SIZE (LOCKED IN FOREVER) */
         @media (max-width: 550px) {
+            body {
+                font-size: 15px;
+            }
+
             .terminal {
-                width: 90vw;
-                height: 92vh; /* Pushing bottom border up */
+                width: 81vw;
+                height: calc(85vh - env(safe-area-inset-bottom, 0px));
                 padding: 10px;
                 border-width: 4px;
             }
         }
+
         @media (max-width: 499px) {
-            .terminal {
-                width: 95vw;
-                height: 90vh; /* More push for bottom visibility */
-                padding: 10px;
-                border-width: 3px;
+            body {
+                font-size: 14px;
             }
+
+            .terminal {
+                width: 80vw;
+            }
+
             .cursor {
                 width: 6px;
                 height: 1.5px;
             }
         }
-        @media (max-width: 375px) {
+
+        @media (max-width: 471px) {
+            body {
+                font-size: 13.5px;
+            }
+
             .terminal {
-                height: 88vh; /* Extra safety for very small screens */
+                width: 81.5vw;
+            }
+        }
+
+        @media (max-width: 450px) {
+            body {
+                font-size: 13px;
+            }
+
+            .terminal {
+                width: 82vw;
+            }
+        }
+
+        @media (max-width: 432px) {
+            body {
+                font-size: 12px;
+            }
+
+            .terminal {
+                width: 82.5vw;
+                position: fixed;
+                top: 0;
+                height: calc(60vh - env(safe-area-inset-bottom, 0px));
+                margin-top: 63px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            body {
+                font-size: 11px;
+            }
+
+            .terminal {
+                width: 83vw;
+            }
+        }
+
+        @media (max-width: 375px) {
+            body {
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 345px) {
+            body {
+                font-size: 9px;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="terminal" id="terminal"></div>
+    <div class="crt"></div> <!-- ✅ CRT overlay -->
+
     <script>
         const terminal = document.getElementById("terminal");
         const messages = [
-            "[HEBER PERSONAL COMPUTER DOS]", 
-            "[Version 4.01 (C)Copyright Heber Corp 1988]", 
-            "[SYSTEM BOOTING UP...]", 
-            "[LOADING KERNEL... OK]", 
-            "[INITIALIZING NETWORK... OK]", 
+            "[HEBER PERSONAL COMPUTER DOS]",
+            "[Version 4.01 (C)Copyright Heber Corp 1988]",
+            "[SYSTEM BOOTING UP...]",
+            "[LOADING KERNEL... OK]",
+            "[INITIALIZING NETWORK... OK]",
             "\n"
         ];
 
         let index = 0;
+
         function typeMessage() {
             if (index < messages.length) {
-                let msg = messages[index] + "\n";
+                const msg = messages[index] + "\n";
                 let charIndex = 0;
-                let interval = setInterval(() => {
+                const interval = setInterval(() => {
                     if (charIndex < msg.length) {
-                        terminal.innerHTML += msg.charAt(charIndex);
-                        charIndex++;
+                        terminal.innerHTML += msg.charAt(charIndex++);
                     } else {
                         clearInterval(interval);
                         index++;
@@ -118,14 +220,13 @@
 
         function typeCommand(command, callback) {
             let charIndex = 0;
-            let cursor = document.createElement("span");
+            const cursor = document.createElement("span");
             cursor.className = "cursor";
             terminal.appendChild(cursor);
 
             function typeNextChar() {
                 if (charIndex < command.length) {
-                    cursor.insertAdjacentText("beforebegin", command.charAt(charIndex));
-                    charIndex++;
+                    cursor.insertAdjacentText("beforebegin", command.charAt(charIndex++));
                     setTimeout(typeNextChar, Math.floor(Math.random() * 200) + 50);
                 } else {
                     cursor.style.background = "lime";
@@ -133,18 +234,18 @@
                     if (callback) callback();
                 }
             }
+
             typeNextChar();
         }
 
         function typeExecutingMessage() {
-            let execMessage = "\n[EXECUTING...]\n";
-            let execIndex = 0;
-            let execInterval = setInterval(() => {
-                if (execIndex < execMessage.length) {
-                    terminal.innerHTML += execMessage.charAt(execIndex);
-                    execIndex++;
+            const msg = "\n[EXECUTING...]\n";
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i < msg.length) {
+                    terminal.innerHTML += msg.charAt(i++);
                 } else {
-                    clearInterval(execInterval);
+                    clearInterval(interval);
                     setTimeout(animateProgressBar, 1000);
                 }
             }, 50);
@@ -153,41 +254,40 @@
         function animateProgressBar() {
             let progress = 0;
             const barLength = 20;
-            let progressBar = document.createElement("div");
-            progressBar.id = "progress-bar";
-            terminal.appendChild(progressBar);
+            const bar = document.createElement("div");
+            bar.id = "progress-bar";
+            terminal.appendChild(bar);
 
-            function updateProgressBar() {
+            function updateBar() {
                 if (progress >= 100) {
-                    progressBar.textContent = "[" + "█".repeat(barLength) + "] 100%";
+                    bar.textContent = `[${"█".repeat(barLength)}] 100%`;
                     setTimeout(() => {
                         terminal.innerHTML += "\nACCESS GRANTED.\n";
-                        terminal.innerHTML += "\nPRESS ANY KEY TO CONTINUE...\n";
-                        terminal.innerHTML += "\nC:\\> ";
-                        let cursor = document.createElement("span");
+                        const isMobile = /Mobi/i.test(navigator.userAgent);
+                        const msg = isMobile ? "TOUCH ANYWHERE TO CONTINUE..." : "PRESS ANY KEY TO CONTINUE...";
+                        terminal.innerHTML += `\n${msg}\n\nC:\\> `;
+                        const cursor = document.createElement("span");
                         cursor.className = "cursor";
                         terminal.appendChild(cursor);
-
-                        function proceedToMain() {
-                            window.location.href = "main.html";
-                        }
-
-                        document.addEventListener("keydown", proceedToMain);
-                        document.addEventListener("touchstart", proceedToMain);
+                        document.addEventListener("keydown", () => location.href = "main.html");
+                        document.addEventListener("touchstart", () => location.href = "main.html");
                     }, 500);
                     return;
                 }
-                let filledBlocks = Math.floor((progress / 100) * barLength);
-                let emptyBlocks = barLength - filledBlocks;
-                let bar = "[" + "█".repeat(filledBlocks) + "░".repeat(emptyBlocks) + "] " + progress + "%";
-                progressBar.textContent = bar;
+
+                const filled = Math.floor((progress / 100) * barLength);
+                const empty = barLength - filled;
+                bar.textContent = `[${"█".repeat(filled)}${"░".repeat(empty)}] ${progress}%`;
                 progress += Math.floor(Math.random() * 20) + 5;
                 if (progress > 100) progress = 100;
-                setTimeout(updateProgressBar, 400);
+                setTimeout(updateBar, 400);
             }
-            updateProgressBar();
+
+            updateBar();
         }
+
         setTimeout(typeMessage, 1000);
     </script>
 </body>
+
 </html>
