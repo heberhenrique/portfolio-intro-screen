@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Boot</title>
+    <style>
+        body {
+            background-color: black;
+            color: green;
+            font-family: monospace;
+            font-size: 16px;
+            line-height: 1.2;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+        }
+        .terminal {
+            width: 80vw;
+            height: 90vh;
+            white-space: pre-wrap;
+            border: 5px solid #333;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 2px;
+            background: green;
+            animation: blink 0.5s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal" id="terminal"></div>
+    <script>
+        const terminal = document.getElementById("terminal");
+        
+        const messages = [
+            "[ HEBER PERSONAL COMPUTER DOS ]\n",
+            "[ Version 4.01 (C)Copyright Heber Corp 1988 ]\n",
+            "[ SYSTEM BOOTING UP... ]\n",
+            "[ LOADING KERNEL... OK ]\n",
+            "[ INITIALIZING NETWORK... OK ]\n",
+            "\n"
+        ];
+        
+        let index = 0;
+        function typeMessage() {
+            if (index < messages.length) {
+                let msg = messages[index];
+                let charIndex = 0;
+                let interval = setInterval(() => {
+                    if (charIndex < msg.length) {
+                        terminal.innerHTML += msg.charAt(charIndex);
+                        charIndex++;
+                    } else {
+                        clearInterval(interval);
+                        index++;
+                        if (index === messages.length) {
+                            setTimeout(() => {
+                                typeCommand(new Date().toLocaleDateString('en-US'), () => {
+                                    setTimeout(() => {
+                                        terminal.innerHTML += "\nC:\\> ";
+                                        typeCommand("start", () => {
+                                            setTimeout(() => {
+                                                typeExecutingMessage();
+                                            }, 1500);
+                                        });
+                                    }, 1000);
+                                });
+                            }, 500);
+                        } else {
+                            setTimeout(typeMessage, 500);
+                        }
+                    }
+                }, 50);
+            }
+        }
+        
+        function typeCommand(command, callback) {
+            let charIndex = 0;
+            let cursor = document.createElement("span");
+            cursor.className = "cursor";
+            terminal.appendChild(cursor);
+            
+            function typeNextChar() {
+                if (charIndex < command.length) {
+                    cursor.insertAdjacentText("beforebegin", command.charAt(charIndex));
+                    charIndex++;
+                    setTimeout(typeNextChar, Math.floor(Math.random() * 200) + 50);
+                } else {
+                    cursor.style.background = "lime";
+                    setTimeout(() => cursor.remove(), 500);
+                    if (callback) callback();
+                }
+            }
+            typeNextChar();
+        }
+        
+        function typeExecutingMessage() {
+            let execMessage = "\n[ EXECUTING... ]\n";
+            let execIndex = 0;
+            let execInterval = setInterval(() => {
+                if (execIndex < execMessage.length) {
+                    terminal.innerHTML += execMessage.charAt(execIndex);
+                    execIndex++;
+                } else {
+                    clearInterval(execInterval);
+                    setTimeout(animateProgressBar, 1000);
+                }
+            }, 50);
+        }
+        
+        function animateProgressBar() {
+            let progress = 0;
+            const barLength = 20;
+            let progressBar = document.createElement("div");
+            progressBar.id = "progress-bar";
+            terminal.appendChild(progressBar);
+            
+            function updateProgressBar() {
+                if (progress >= 100) {
+                    progressBar.textContent = "[" + "█".repeat(barLength) + "] 100%";
+                    setTimeout(() => {
+                        terminal.innerHTML += "\nACCESS GRANTED.\n";
+                        terminal.innerHTML += "\nPRESS ANY KEY TO CONTINUE...\n";
+                        terminal.innerHTML += "\nC:\\> ";
+                        let cursor = document.createElement("span");
+                        cursor.className = "cursor";
+                        terminal.appendChild(cursor);
+                        
+                        document.addEventListener("keydown", () => {
+                            window.location.href = "main.html";
+                        });
+                    }, 500);
+                    return;
+                }
+                
+                let filledBlocks = Math.floor((progress / 100) * barLength);
+                let emptyBlocks = barLength - filledBlocks;
+                let bar = "[" + "█".repeat(filledBlocks) + "░".repeat(emptyBlocks) + "] " + progress + "%";
+                
+                progressBar.textContent = bar;
+                
+                progress += Math.floor(Math.random() * 20) + 5;
+                if (progress > 100) progress = 100;
+                setTimeout(updateProgressBar, 400);
+            }
+            updateProgressBar();
+        }
+        
+        setTimeout(typeMessage, 1000);
+    </script>
+</body>
+</html>
