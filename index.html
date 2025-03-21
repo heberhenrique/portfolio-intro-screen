@@ -22,7 +22,7 @@
         }
         .terminal {
             width: 80vw;
-            height: calc(90vh - env(safe-area-inset-bottom)); /* Adjust for iOS footer bar */
+            height: 90vh;
             white-space: pre;
             border: 5px solid #333;
             padding: 15px;
@@ -57,14 +57,14 @@
             );
             pointer-events: none;
         }
-        /* Responsive adjustments */
+        /* Responsive Fix: Reduce Terminal Height on Mobile */
         @media (max-width: 550px) {
             body {
                 font-size: 14px;
             }
             .terminal {
                 width: 90vw;
-                height: calc(85vh - env(safe-area-inset-bottom));
+                height: 85vh; /* Fix for mobile - ensure bottom border visibility */
                 padding: 10px;
                 border-width: 4px;
             }
@@ -75,7 +75,7 @@
             }
             .terminal {
                 width: 95vw;
-                height: calc(85vh - env(safe-area-inset-bottom));
+                height: 80vh; /* Extra reduction to guarantee bottom visibility */
                 padding: 10px;
                 border-width: 3px;
             }
@@ -86,7 +86,7 @@
         }
         @media (max-width: 375px) {
             .terminal {
-                height: calc(90vh - env(safe-area-inset-bottom));
+                height: 75vh; /* Extra safety for very small screens */
             }
         }
     </style>
