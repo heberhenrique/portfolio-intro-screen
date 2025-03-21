@@ -46,7 +46,7 @@
     <div class="terminal" id="terminal"></div>
     <script>
         const terminal = document.getElementById("terminal");
-        
+
         const messages = [
             "[ HEBER PERSONAL COMPUTER DOS ]\n",
             "[ Version 4.01 (C)Copyright Heber Corp 1988 ]\n",
@@ -55,7 +55,7 @@
             "[ INITIALIZING NETWORK... OK ]\n",
             "\n"
         ];
-        
+
         let index = 0;
         function typeMessage() {
             if (index < messages.length) {
@@ -88,13 +88,13 @@
                 }, 50);
             }
         }
-        
+
         function typeCommand(command, callback) {
             let charIndex = 0;
             let cursor = document.createElement("span");
             cursor.className = "cursor";
             terminal.appendChild(cursor);
-            
+
             function typeNextChar() {
                 if (charIndex < command.length) {
                     cursor.insertAdjacentText("beforebegin", command.charAt(charIndex));
@@ -108,7 +108,7 @@
             }
             typeNextChar();
         }
-        
+
         function typeExecutingMessage() {
             let execMessage = "\n[ EXECUTING... ]\n";
             let execIndex = 0;
@@ -122,14 +122,14 @@
                 }
             }, 50);
         }
-        
+
         function animateProgressBar() {
             let progress = 0;
             const barLength = 20;
             let progressBar = document.createElement("div");
             progressBar.id = "progress-bar";
             terminal.appendChild(progressBar);
-            
+
             function updateProgressBar() {
                 if (progress >= 100) {
                     progressBar.textContent = "[" + "█".repeat(barLength) + "] 100%";
@@ -140,27 +140,30 @@
                         let cursor = document.createElement("span");
                         cursor.className = "cursor";
                         terminal.appendChild(cursor);
-                        
-                        document.addEventListener("keydown", () => {
+
+                        function proceedToMain() {
                             window.location.href = "main.html";
-                        });
+                        }
+
+                        document.addEventListener("keydown", proceedToMain);
+                        document.addEventListener("touchstart", proceedToMain);
                     }, 500);
                     return;
                 }
-                
+
                 let filledBlocks = Math.floor((progress / 100) * barLength);
                 let emptyBlocks = barLength - filledBlocks;
                 let bar = "[" + "█".repeat(filledBlocks) + "░".repeat(emptyBlocks) + "] " + progress + "%";
-                
+
                 progressBar.textContent = bar;
-                
+
                 progress += Math.floor(Math.random() * 20) + 5;
                 if (progress > 100) progress = 100;
                 setTimeout(updateProgressBar, 400);
             }
             updateProgressBar();
         }
-        
+
         setTimeout(typeMessage, 1000);
     </script>
 </body>
