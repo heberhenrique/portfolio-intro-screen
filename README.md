@@ -19,9 +19,7 @@ Built with pure **HTML**, **CSS**, and **JavaScript**, this screen provides an a
 
 ## 🚀 Live Preview
 
-👉 [Visit the live demo](https://your-username.github.io/portfolio-intro-screen/)
-
-> ⚠️ Replace `your-username` with your actual GitHub username after publishing.
+👉 [Visit the live demo](https://heberhenrique.github.io/portfolio-intro-screen/)
 
 ---
 
@@ -29,7 +27,7 @@ Built with pure **HTML**, **CSS**, and **JavaScript**, this screen provides an a
 
 ```bash
 # Clone the repository
-$ git clone https://github.com/your-username/portfolio-intro-screen.git
+$ git clone https://github.com/heberhenrique/portfolio-intro-screen.git
 
 # Open index.html directly in browser
 $ open index.html
